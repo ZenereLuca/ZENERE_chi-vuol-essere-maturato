@@ -1,3 +1,5 @@
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -20,6 +22,16 @@ public class ApiClient {
             response = client.send(request, HttpResponse.BodyHandlers.ofString()); // voglio gestire la risposta come una stringa
         } catch(IOException | InterruptedException e) {
             return "Errore nella richiesta API";
+        }
+
+        Gson gson = new Gson();
+        // notare uso di ApiResponse.class
+        ApiResponse apiResponse = gson.fromJson(response.body(), ApiResponse.class);
+
+        // Ora possiamo accedere alle domande come oggetti Java
+        for (ApiQuestion question : apiResponse.results) {
+            System.out.println(question.question);
+            System.out.println("Risposta corretta: " + question.correct_answer);
         }
 
         return response.body();
